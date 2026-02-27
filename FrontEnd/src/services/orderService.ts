@@ -9,7 +9,18 @@ export const getOrders = async () => {
     const data: Order[] = await response.json();
     return data;
   } catch {
-    // console.error("Could not fetch data from api");
+    throw new Error("Failed to fetch orders");
+  }
+};
+
+export const getOrdersSorted = async (direction: string) => {
+  try {
+    const response = await fetch(
+      "http://localhost:3000/orders?sort=" + direction,
+    );
+    const data: Order[] = await response.json();
+    return data;
+  } catch {
     throw new Error("Failed to fetch orders");
   }
 };
@@ -52,7 +63,7 @@ export const getProductByOrder = async (orderId: number, productId: number) => {
 };
 
 //CREATE
-//create order
+
 export const createOrder = async (name: string, address: string) => {
   try {
     const response = await fetch("http://localhost:3000/orders/", {
@@ -143,7 +154,6 @@ export const updateProductRequest = async (
 
 //DELETE
 
-//remove order
 export const removeOrder = async (orderId: number) => {
   try {
     const response = await fetch("http://localhost:3000/orders/" + orderId, {
@@ -155,8 +165,6 @@ export const removeOrder = async (orderId: number) => {
   }
 };
 
-// remove product
-//OrderRouter.delete("/:orderId/:productId", async (req, res) => {
 export const removeProductFromOrder = async (
   orderId: number,
   productId: number,

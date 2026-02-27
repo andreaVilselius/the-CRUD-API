@@ -34,18 +34,20 @@ OrderRouter.delete("/products/:orderId", async (req, res) => {
   }
 });
 
-OrderRouter.get("/", async (_, res) => {
-  //hämta orders
+OrderRouter.get("/", async (req, res) => {
   try {
-    const orders = await getOrders();
+    const { q, sort } = req.query;
+
+    const orders = await getOrders(q, sort);
+
     res.status(200).json(orders);
   } catch (error) {
     console.error(error);
-    res.status(500).send(JSON.stringify(error));
+    res.status(500).json({ message: error });
   }
 });
+
 OrderRouter.get("/:id", async (req, res) => {
-  //hämta order
   try {
     const { id } = req.params;
     const found = await getOrder(id);
@@ -61,12 +63,14 @@ OrderRouter.get("/:id", async (req, res) => {
 });
 
 OrderRouter.get("/products/:name", async (req, res) => {
-  //hämta produkter
   try {
+    const { q, sort } = req.query;
     const { name } = req.params;
-    const found = await getProductsByOrder(name);
-    if (found) {
-      res.status(200).json(found);
+
+    const products = await getProductsByOrder(name, q, sort);
+    console.log(products);
+    if (products) {
+      res.status(200).json(products);
     } else {
       res.status(400).json({ message: "Cannot find order with name " + name });
     }
@@ -77,8 +81,6 @@ OrderRouter.get("/products/:name", async (req, res) => {
 });
 
 OrderRouter.get("/:orderId/:productId", async (req, res) => {
-  //hämta produkt
-
   try {
     const { orderId, productId } = req.params;
     const found = await getProductByOrder(orderId, productId);
@@ -139,10 +141,9 @@ OrderRouter.post("/addproduct/:orderId", async (req, res) => {
 //update products
 
 OrderRouter.put("/:orderId", async (req, res) => {
-  //ändra adress och namn på order
   try {
     const { orderId } = req.params;
-    //const { orderText }: { orderText: Order } = req.body;
+
     const orderText = req.body as Order;
 
     if (+orderId != orderText.id) {
@@ -163,7 +164,6 @@ OrderRouter.put("/:orderId", async (req, res) => {
 });
 
 OrderRouter.put("/:orderId/:productId", async (req, res) => {
-  //uppdatera produkt
   try {
     const { orderId, productId } = req.params;
     const updatedProduct = req.body as Product;

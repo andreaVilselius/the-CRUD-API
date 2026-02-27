@@ -1,5 +1,5 @@
 import { Order } from "../Models/Order";
-import type { Product } from "../Models/Product";
+
 import {
   addProductToOrder,
   getOrders,
@@ -9,13 +9,11 @@ import {
   updateProductRequest,
 } from "../services/orderService";
 
-let productAdded = false;
 export const createHTML = (orders: Order[]) => {
   const ul = document.getElementById("orders");
   if (!ul) return;
   ul.innerHTML = "";
   orders.forEach((order) => {
-    // const li = document.createElement("li");
     const infoDiv = document.createElement("div");
     infoDiv.className = "infoDiv";
 
@@ -23,15 +21,15 @@ export const createHTML = (orders: Order[]) => {
     orderInfoDiv.className = "orderInfoDiv";
 
     const removebtn = document.createElement("button");
-    removebtn.innerHTML = "remove";
+    removebtn.innerHTML = "radera beställning";
     const changebtn = document.createElement("button");
-    changebtn.innerHTML = "change order info";
+    changebtn.innerHTML = "uppdatera beställning";
 
     const h3 = document.createElement("h3");
     const p = document.createElement("p");
     const span = document.createElement("span");
 
-    h3.innerHTML = "Name: " + order.name;
+    h3.innerHTML = "Namn: " + order.name;
     p.innerHTML = "Adress: " + order.address;
     span.innerHTML = "Id: " + order.id.toString();
 
@@ -63,13 +61,13 @@ export const createHTML = (orders: Order[]) => {
     fAmountOfProducts.placeholder = " 5 ";
     const fProductName = document.createElement("input");
     fProductName.type = "text";
-    fProductName.placeholder = "dress";
+    fProductName.placeholder = "byxa";
     const fProductPrice = document.createElement("input");
     fProductPrice.type = "text";
     fProductPrice.placeholder = "50";
     const addProductsBtn = document.createElement("button");
     addProductsBtn.type = "submit";
-    addProductsBtn.innerHTML = "add products";
+    addProductsBtn.innerHTML = "lägg till produkt";
 
     productForm.appendChild(fAmountOfProducts);
     productForm.appendChild(fProductName);
@@ -78,95 +76,99 @@ export const createHTML = (orders: Order[]) => {
     formUl.appendChild(productForm);
 
     order.orderItems.forEach((item) => {
+      const productLi = document.createElement("li");
+      productLi.innerHTML = "";
       fAmountOfProducts.value = item.nrOfProducts.toString();
       fProductName.value = item.product.name;
       fProductPrice.value = item.product.price.toString();
 
-      if (productAdded) {
-        const productLi = document.createElement("li");
-        const removeProductBtn = document.createElement("button");
-        removeProductBtn.innerHTML = "remove product";
-        const updateProductBtn = document.createElement("button");
-        updateProductBtn.innerHTML = "update product";
+      const removeProductBtn = document.createElement("button");
+      removeProductBtn.innerHTML = "ta bort produkt";
+      const updateProductBtn = document.createElement("button");
+      updateProductBtn.innerHTML = "updatera produkt";
 
-        productLi.innerHTML =
-          "Antal varor  :" +
-          item.nrOfProducts.toString() +
-          " st " +
-          ", Typ av vara:  " +
-          item.product.name +
-          ", Pris per vara: " +
-          item.product.price.toString();
-        +" kr ";
+      productLi.innerHTML =
+        "Antal varor  :" +
+        item.nrOfProducts.toString() +
+        " st " +
+        ", Typ av vara:  " +
+        item.product.name +
+        ", Pris per vara: " +
+        item.product.price.toString();
+      +" kr ";
 
-        //remove product from order
-        removeProductBtn.addEventListener("click", async () => {
-          const productRemovedSuccess = await removeProductFromOrder(
-            order.id,
-            item.product.id,
-          );
-          if (productRemovedSuccess) {
-            const orders = await getOrders();
-            createHTML(orders);
-          } else {
-            console.log("not able to delete product");
-          }
-        });
+      //remove product from order
+      removeProductBtn.addEventListener("click", async () => {
+        const productRemovedSuccess = await removeProductFromOrder(
+          order.id,
+          item.product.id,
+        );
+        if (productRemovedSuccess) {
+          const orders = await getOrders();
+          createHTML(orders);
+        } else {
+          console.log("not able to delete product");
+        }
+      });
 
-        //update product
+      //update product
 
-        const updateProductForm = document.createElement("form");
-        const quantityInput = document.createElement("input");
-        quantityInput.type = "text";
-        const productNameInput = document.createElement("input");
-        quantityInput.type = "text";
-        const priceInput = document.createElement("input");
-        quantityInput.type = "text";
+      const updateProductForm = document.createElement("form");
 
-        updateProductBtn.addEventListener("click", async () => {
-          //  quantityInput.value = order.id.toString();
-          productNameInput.value = item.product.name;
-          priceInput.value = item.product.price.toString();
+      const productNameInput = document.createElement("input");
+      productNameInput.type = "text";
+      productNameInput.placeholder = "skor";
 
-          const saveUpdatedProductBtn = document.createElement("button");
-          saveUpdatedProductBtn.type = "submit";
-          saveUpdatedProductBtn.innerHTML = "save";
+      const priceInput = document.createElement("input");
+      priceInput.type = "text";
+      priceInput.placeholder = "300 kr";
 
-          //updateProductForm.appendChild(quantityInput);
-          updateProductForm.appendChild(productNameInput);
-          updateProductForm.appendChild(priceInput);
-          updateProductForm.appendChild(saveUpdatedProductBtn);
-        });
+      const saveUpdatedProductBtn = document.createElement("button");
+      updateProductBtn.addEventListener("click", async () => {
+        productNameInput.value = item.product.name;
+        priceInput.value = item.product.price.toString();
 
-        updateProductForm.addEventListener("submit", async (e) => {
-          const theUpdatedProduct = {
-            id: item.product.id,
-            name: productNameInput.value,
-            price: parseInt(priceInput.value),
-          };
+        saveUpdatedProductBtn.type = "submit";
+        saveUpdatedProductBtn.innerHTML = "spara";
 
-          e.preventDefault();
-          const productUpdateSuccess = await updateProductRequest(
-            order.id,
-            item.product.id,
-            theUpdatedProduct,
-          );
+        updateProductForm.appendChild(productNameInput);
+        updateProductForm.appendChild(priceInput);
+        updateProductForm.appendChild(saveUpdatedProductBtn);
 
-          if (productUpdateSuccess) {
-            const orders = await getOrders();
-            createHTML(orders);
-          }
-        });
+        productNameInput.value = "";
+        priceInput.value = "";
+      });
 
-        productLi.appendChild(updateProductBtn);
-        productLi.appendChild(removeProductBtn);
-        productLi.appendChild(updateProductForm);
-        formUl.appendChild(productLi);
-        infoDiv.appendChild(formUl);
-      }
+      updateProductForm.addEventListener("submit", async (e) => {
+        const theUpdatedProduct = {
+          id: item.product.id,
+          name: productNameInput.value,
+          price: parseInt(priceInput.value),
+        };
+
+        e.preventDefault();
+        const productUpdateSuccess = await updateProductRequest(
+          order.id,
+          item.product.id,
+          theUpdatedProduct,
+        );
+
+        if (productUpdateSuccess) {
+          const orders = await getOrders();
+          createHTML(orders);
+        }
+      });
+
+      fAmountOfProducts.value = "";
+      fProductName.value = "";
+      fProductPrice.value = "";
+
+      productLi.appendChild(updateProductBtn);
+      productLi.appendChild(removeProductBtn);
+      productLi.appendChild(updateProductForm);
+      formUl.appendChild(productLi);
+      infoDiv.appendChild(formUl);
     });
-
-    //add product to order
 
     productForm.addEventListener("submit", async (e) => {
       e.preventDefault();
@@ -183,7 +185,7 @@ export const createHTML = (orders: Order[]) => {
 
       if (addProductsSuccess) {
         const orders = await getOrders();
-        productAdded = true;
+
         createHTML(orders);
       }
     });
@@ -196,28 +198,22 @@ export const createHTML = (orders: Order[]) => {
     const fAdress = document.createElement("input");
 
     changebtn.addEventListener("click", async () => {
-      //skapa två nya fält för namn och epost
       form.innerHTML = "";
 
-      //   const fName = document.createElement("input");
       fName.type = "text";
+      fName.placeholder = "Namn";
       fName.value = order.name;
 
-      // const fEmail = document.createElement("input");
       fAdress.type = "text";
+      fAdress.placeholder = " Adress";
       fAdress.value = order.address;
 
       const subBtn = document.createElement("button");
       subBtn.type = "submit";
-      subBtn.textContent = "save";
-      //
-
-      /*  const addOrderBtn = document.createElement("button");
-      addOrderBtn.innerHTML = "add order";*/
+      subBtn.textContent = "spara";
 
       form.appendChild(fName);
       form.appendChild(fAdress);
-      //  form.appendChild(addOrderBtn);
       form.appendChild(subBtn);
       infoDiv.appendChild(form);
     });
@@ -235,14 +231,8 @@ export const createHTML = (orders: Order[]) => {
         createHTML(users);
       }
     });
-    /*li.appendChild(changebtn);
-    li.appendChild(removebtn);*/
-    infoDiv.appendChild(productForm);
 
-    /* li.appendChild(fAmountOfProducts);
-    li.appendChild(fProductName);
-    li.appendChild(fProductPrice);
-    li.appendChild(addProductsBtn);*/
+    infoDiv.appendChild(productForm);
 
     ul.appendChild(infoDiv);
   });

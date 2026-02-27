@@ -16,8 +16,6 @@ const orderSchema = new Schema({
 export const OrderModel = model("order", orderSchema);
 export type OrderFromDB = InferSchemaType<typeof orderSchema>;
 
-// * export type UserFromDb = InferSchemaType<typeof userSchema>;
-
 export const convertDBOrderToDTO = (dbOrder: OrderFromDB): OrderDTO => {
   return {
     id: dbOrder.id,
@@ -36,10 +34,3 @@ export const convertDBOrderToDTO = (dbOrder: OrderFromDB): OrderDTO => {
     }),
   } satisfies OrderDTO;
 };
-
-/**
- * - En modell för ordrar:
-  - En order innehåller information om en order (såsom kundinformation, datum, et.c.)
-  - En order innehåller en lista med objekt. Dessa objekt beskriver vilken 
-  produkt som finns i varukorgen och hur många av den det finns
- */

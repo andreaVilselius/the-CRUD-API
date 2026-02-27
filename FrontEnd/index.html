@@ -9,23 +9,32 @@
   <body>
     <div id="app">
       <div class="forms">
-        <form id="addOrderForm">
-          <label for="name">Namn: </label>
-          <input type="text" id="name" required />
-          <label for="address">Address: </label>
-          <input type="text" id="address" required />
-          <button type="submit">Lägg till beställning</button>
-        </form>
+        <div class="row1">
+          <form id="addOrderForm">
+            <input type="text" placeholder="Namn" id="name" required />
 
-        <form id="searchOrder">
-          <label for="id">Id: </label>
-          <input type="text" id="id" required />
-          <button type="submit">Sök beställning</button>
-        </form>
+            <input type="text" id="address" placeholder="Address" required />
 
-        <form id="readOrders">
-          <button type="submit">Se alla beställningar</button>
-        </form>
+            <button type="submit">Lägg till beställning</button>
+          </form>
+
+          <form id="searchOrder">
+            <input type="text" id="id" placeholder="Id" />
+            <button type="submit">Sök beställning</button>
+          </form>
+        </div>
+        <div class="row2">
+          <form id="readOrders">
+            <button type="submit">Se alla beställningar</button>
+          </form>
+
+          <div class="sortDiv">
+            <select name="sortOrderSelect" id="sort">
+              <option value="asc">sortera ö-a</option>
+              <option value="desc">sortera a-ö</option>
+            </select>
+          </div>
+        </div>
       </div>
 
       <ul id="orders"></ul>
