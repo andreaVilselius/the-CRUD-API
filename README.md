@@ -10,6 +10,9 @@ I terminal:
 cd Frontend
 npm install
 npm run dev 
+-----
+hemsida: https://the-crud-api-frontend.onrender.com/
+
 
 --------------
 Denna inlämning går igenom följande mål från kursplanen:
